@@ -10,7 +10,6 @@ const [customCategory, setCustomCategory] = useState("");
 
 async function handleSubmit(e) {
 
-```
 e.preventDefault();
 
 setLoading(true);
@@ -80,7 +79,6 @@ reader.onload = async () => {
 
   setLoading(false);
 };
-```
 
 }
 
@@ -94,7 +92,6 @@ fontFamily: "Arial"
 }}
 >
 
-```
   <h1>World Talent Olympiad 2026</h1>
 
   <p>
@@ -173,14 +170,14 @@ fontFamily: "Arial"
       <option>Custom</option>
     </select>
 
-    {customCategory !== "" || false ? (
-      <input
-        placeholder="Enter Custom Category"
-        value={customCategory}
-        onChange={(e) => setCustomCategory(e.target.value)}
-        style={inputStyle}
-      />
-    ) : null}
+    {form?.category?.value === "Custom" && (
+<input
+placeholder="Enter Custom Category"
+value={customCategory}
+onChange={(e) => setCustomCategory(e.target.value)}
+style={inputStyle}
+/>
+)}
 
     <input
       type="file"
