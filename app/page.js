@@ -109,146 +109,42 @@ export default function Home() {
 
   }
 
-  async function openUploadWidget() {
+  function openUploadWidget() {
 
-    const input = document.createElement("input");
+    const widget =
+      window.cloudinary.createUploadWidget(
 
-    input.type = "file";
+        {
+          cloudName: "muxrjcvw",
 
-    input.accept =
-      "video/*,image/*,.pdf,.mp3,.wav";
+          uploadPreset: "wto_uploads",
 
-    input.onchange = async (event) => {
+          sources: ["local"],
 
-      let file = event.target.files[0];
+          multiple: false,
 
-      if (!file) return;
+          resourceType: "auto",
 
-      try {
+          maxFileSize: 100000000
+        },
 
-        // VIDEO COMPRESSION
+        (error, result) => {
 
-        if (file.type.startsWith("video/")) {
+          if (
+            !error &&
+            result &&
+            result.event === "success"
+          ) {
 
-          alert(
-            "Compressing video before upload. Please wait..."
-          );
+            setUploadedFile(result.info);
 
-          const {
-            FFmpeg
-          } = await import("@ffmpeg/ffmpeg");
-
-          const {
-            fetchFile
-          } = await import("@ffmpeg/util");
-
-          const ffmpeg = new FFmpeg();
-
-          await ffmpeg.load();
-
-          await ffmpeg.writeFile(
-            file.name,
-            await fetchFile(file)
-          );
-
-          await ffmpeg.exec([
-            "-i",
-            file.name,
-
-            "-vcodec",
-            "libx264",
-
-            "-crf",
-            "32",
-
-            "-preset",
-            "fast",
-
-            "-acodec",
-            "aac",
-
-            "compressed.mp4"
-          ]);
-
-          const data =
-            await ffmpeg.readFile(
-              "compressed.mp4"
-            );
-
-          file = new File(
-            [data],
-            "compressed.mp4",
-            {
-              type: "video/mp4"
-            }
-          );
-
-          alert(
-            "Compression completed. Upload starting..."
-          );
+          }
 
         }
 
-        // CLOUDINARY UPLOAD
+      );
 
-        const cloudinaryData =
-          new FormData();
-
-        cloudinaryData.append(
-          "file",
-          file
-        );
-
-        cloudinaryData.append(
-          "upload_preset",
-          "wto_uploads"
-        );
-
-        const cloudinaryResponse =
-          await fetch(
-            "https://api.cloudinary.com/v1_1/muxrjcvw/auto/upload",
-            {
-              method: "POST",
-              body: cloudinaryData
-            }
-          );
-
-        const cloudinaryResult =
-          await cloudinaryResponse.json();
-
-        if (
-          cloudinaryResult.secure_url
-        ) {
-
-          setUploadedFile(
-            cloudinaryResult
-          );
-
-          alert(
-            "File uploaded successfully"
-          );
-
-        } else {
-
-          alert(
-            "Upload failed"
-          );
-
-        }
-
-      } catch(error) {
-
-        console.error(error);
-
-        alert(
-          "Upload failed"
-        );
-
-      }
-
-    };
-
-    input.click();
+    widget.open();
 
   }
 
@@ -368,8 +264,22 @@ export default function Home() {
         >
           {uploadedFile
             ? "File Uploaded Successfully"
-            : "Upload Talent File"}
+            : "Upload Talent File (Under 100MB)"}
         </button>
+
+        <a
+          href="https://wa.me/917689988389"
+          target="_blank"
+          style={{
+            ...buttonStyle,
+            display: "block",
+            textAlign: "center",
+            textDecoration: "none",
+            background: "#25D366"
+          }}
+        >
+          Send Large Files on WhatsApp
+        </a>
 
         <p
           style={{
@@ -378,10 +288,9 @@ export default function Home() {
             fontSize: "14px"
           }}
         >
-          Upload MP4, MP3, PDF,
-          JPG, PNG or HEIC.
-          Large videos are compressed
-          automatically before upload.
+          Upload JPG, PNG, PDF, MP3 or MP4 under 100MB.
+          <br />
+          For larger files, use WhatsApp submission.
         </p>
 
         <div style={{ marginTop: "20px" }}>
