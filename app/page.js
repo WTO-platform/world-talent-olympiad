@@ -1,12 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Home() {
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [customCategory, setCustomCategory] = useState("");
+
+  useEffect(() => {
+
+    const script = document.createElement("script");
+
+    script.src =
+      "https://upload-widget.cloudinary.com/global/all.js";
+
+    script.async = true;
+
+    document.body.appendChild(script);
+
+  }, []);
 
   async function handleSubmit(e) {
 
@@ -16,37 +29,46 @@ export default function Home() {
 
     const form = e.target;
 
-    const file = form.file.files[0];
-
-    if (!file) {
-      alert("Please upload a file");
-      setLoading(false);
-      return;
-    }
-
     try {
 
-      // Upload to Cloudinary
+      // Open Cloudinary Upload Widget
 
-      const cloudinaryData = new FormData();
+      const cloudinaryResult = await new Promise((resolve, reject) => {
 
-      cloudinaryData.append("file", file);
+        const widget = window.cloudinary.createUploadWidget(
 
-      cloudinaryData.append(
-        "upload_preset",
-        "wto_uploads"
-      );
+          {
+            cloudName: "muxrjcvw",
 
-      const cloudinaryResponse = await fetch(
-        "https://api.cloudinary.com/v1_1/muxrjcvw/auto/upload",
-        {
-          method: "POST",
-          body: cloudinaryData
-        }
-      );
+            uploadPreset: "wto_uploads",
 
-      const cloudinaryResult =
-        await cloudinaryResponse.json();
+            sources: ["local"],
+
+            multiple: false,
+
+            resourceType: "auto",
+
+            maxFileSize: 300000000
+          },
+
+          (error, result) => {
+
+            if (error) {
+              reject(error);
+              return;
+            }
+
+            if (result.event === "success") {
+              resolve(result.info);
+            }
+
+          }
+
+        );
+
+        widget.open();
+
+      });
 
       // Final category
 
@@ -211,13 +233,6 @@ export default function Home() {
           placeholder="Custom Category (Optional)"
           value={customCategory}
           onChange={(e) => setCustomCategory(e.target.value)}
-          style={inputStyle}
-        />
-
-        <input
-          type="file"
-          name="file"
-          required
           style={inputStyle}
         />
 
