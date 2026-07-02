@@ -74,7 +74,7 @@ async function handleSubmit(e) {
     };
 
     const response = await fetch(
-      "PASTE_YOUR_APPS_SCRIPT_URL",
+      "https://script.google.com/macros/s/AKfycbylhg5ubj_1LnUs-XZ3dKDPdV64nhgCoJFfanL6khpvb38LT-3UjtNAbHGAy825bQ2YlQ/exec",
       {
         method: "POST",
         body: JSON.stringify(payload)
