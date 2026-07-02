@@ -5,8 +5,12 @@ import { useState, useEffect } from "react";
 export default function Home() {
 
   const [loading, setLoading] = useState(false);
+
   const [success, setSuccess] = useState("");
+
   const [customCategory, setCustomCategory] = useState("");
+
+  const [uploadedFile, setUploadedFile] = useState(null);
 
   useEffect(() => {
 
@@ -25,59 +29,21 @@ export default function Home() {
 
     e.preventDefault();
 
+    if (!uploadedFile) {
+      alert("Please upload a file first");
+      return;
+    }
+
     setLoading(true);
 
     const form = e.target;
 
     try {
 
-      // Open Cloudinary Upload Widget
-
-      const cloudinaryResult = await new Promise((resolve, reject) => {
-
-        const widget = window.cloudinary.createUploadWidget(
-
-          {
-            cloudName: "muxrjcvw",
-
-            uploadPreset: "wto_uploads",
-
-            sources: ["local"],
-
-            multiple: false,
-
-            resourceType: "auto",
-
-            maxFileSize: 300000000
-          },
-
-          (error, result) => {
-
-            if (error) {
-              reject(error);
-              return;
-            }
-
-            if (result.event === "success") {
-              resolve(result.info);
-            }
-
-          }
-
-        );
-
-        widget.open();
-
-      });
-
-      // Final category
-
       const finalCategory =
         form.category.value === "Custom"
           ? customCategory
           : form.category.value;
-
-      // Send to Apps Script
 
       const payload = {
 
@@ -99,9 +65,9 @@ export default function Home() {
 
         resultDate: "7 July 2026",
 
-        fileUrl: cloudinaryResult.secure_url,
+        fileUrl: uploadedFile.secure_url,
 
-        filePublicId: cloudinaryResult.public_id
+        filePublicId: uploadedFile.public_id
 
       };
 
@@ -123,6 +89,8 @@ export default function Home() {
 
         setCustomCategory("");
 
+        setUploadedFile(null);
+
       } else {
 
         alert(result.error || "Submission failed");
@@ -138,6 +106,45 @@ export default function Home() {
     }
 
     setLoading(false);
+
+  }
+
+  function openUploadWidget() {
+
+    const widget =
+      window.cloudinary.createUploadWidget(
+
+        {
+          cloudName: "muxrjcvw",
+
+          uploadPreset: "wto_uploads",
+
+          sources: ["local"],
+
+          multiple: false,
+
+          resourceType: "auto",
+
+          maxFileSize: 300000000
+        },
+
+        (error, result) => {
+
+          if (
+            !error &&
+            result &&
+            result.event === "success"
+          ) {
+
+            setUploadedFile(result.info);
+
+          }
+
+        }
+
+      );
+
+    widget.open();
 
   }
 
@@ -220,43 +227,69 @@ export default function Home() {
           }}
         >
           <option value="">Select Talent Category</option>
+
           <option>Singing</option>
+
           <option>Dancing</option>
+
           <option>Painting</option>
+
           <option>Acting</option>
+
           <option>Photography</option>
+
           <option>Magic</option>
+
           <option>Custom</option>
+
         </select>
 
         <input
           placeholder="Custom Category (Optional)"
           value={customCategory}
-          onChange={(e) => setCustomCategory(e.target.value)}
+          onChange={(e) =>
+            setCustomCategory(e.target.value)
+          }
           style={inputStyle}
         />
+
+        <button
+          type="button"
+          onClick={openUploadWidget}
+          style={buttonStyle}
+        >
+          {uploadedFile
+            ? "File Uploaded Successfully"
+            : "Upload Talent File"}
+        </button>
 
         <div style={{ marginTop: "20px" }}>
 
           <label>
+
             <input
               type="radio"
               name="payment"
               value="Paid"
               required
             />
+
             {" "}I Have Paid
+
           </label>
 
           <br /><br />
 
           <label>
+
             <input
               type="radio"
               name="payment"
               value="Pending"
             />
+
             {" "}I Will Pay Later
+
           </label>
 
         </div>
@@ -265,7 +298,9 @@ export default function Home() {
           disabled={loading}
           style={buttonStyle}
         >
-          {loading ? "Submitting..." : "Submit"}
+          {loading
+            ? "Submitting..."
+            : "Submit"}
         </button>
 
       </form>
@@ -275,17 +310,29 @@ export default function Home() {
 }
 
 const inputStyle = {
+
   width: "100%",
+
   padding: "12px",
+
   marginTop: "15px"
+
 };
 
 const buttonStyle = {
+
   width: "100%",
+
   padding: "14px",
+
   marginTop: "20px",
+
   background: "black",
+
   color: "white",
+
   border: "none",
+
   cursor: "pointer"
+
 };
