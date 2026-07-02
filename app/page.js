@@ -170,14 +170,13 @@ fontFamily: "Arial"
       <option>Custom</option>
     </select>
 
-    {form?.category?.value === "Custom" && (
-<input
-placeholder="Enter Custom Category"
+    <input
+placeholder="Custom Category (Optional)"
 value={customCategory}
 onChange={(e) => setCustomCategory(e.target.value)}
 style={inputStyle}
 />
-)}
+
 
     <input
       type="file"
