@@ -76,7 +76,7 @@ reader.onload = async () => {
 
       console.error(result);
 
-      alert("Submission failed");
+      alert(result.error || "Submission failed");
 
     }
 
@@ -84,7 +84,7 @@ reader.onload = async () => {
 
     console.error(error);
 
-    alert("Something went wrong");
+   alert(error.message);
 
   }
 
