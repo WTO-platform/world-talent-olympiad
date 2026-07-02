@@ -55,7 +55,7 @@ reader.onload = async () => {
     };
 
     const response = await fetch(
-      "https://script.google.com/macros/s/AKfycbyhyd7TPxGL-iEvRPxXbdCqEp2LvtOM9sKZYUk87NSy0QQN0DngYsbl3Kg5W4Zts2cmsw/exec",
+      "https://script.google.com/macros/s/AKfycbylhg5ubj_1LnUs-XZ3dKDPdV64nhgCoJFfanL6khpvb38LT-3UjtNAbHGAy825bQ2YlQ/exec",
       {
         method: "POST",
         body: JSON.stringify(payload)
