@@ -10,6 +10,7 @@ const [customCategory, setCustomCategory] = useState("");
 
 async function handleSubmit(e) {
 
+```
 e.preventDefault();
 
 setLoading(true);
@@ -30,29 +31,29 @@ reader.readAsDataURL(file);
 
 reader.onload = async () => {
 
-  const base64 = reader.result.split(",")[1];
-
-  const finalCategory =
-    form.category.value === "Custom"
-      ? customCategory
-      : form.category.value;
-
-  const payload = {
-    fullName: form.fullName.value,
-    age: form.age.value,
-    country: form.country.value,
-    whatsapp: form.whatsapp.value,
-    email: form.email.value,
-    category: finalCategory,
-    paymentChoice: form.payment.value,
-    batchId: "WTO-2026-W27",
-    resultDate: "7 July 2026",
-    file: base64,
-    fileName: file.name,
-    mimeType: file.type
-  };
-
   try {
+
+    const base64 = reader.result.split(",")[1];
+
+    const finalCategory =
+      form.category.value === "Custom"
+        ? customCategory
+        : form.category.value;
+
+    const payload = {
+      fullName: form.fullName.value,
+      age: form.age.value,
+      country: form.country.value,
+      whatsapp: form.whatsapp.value,
+      email: form.email.value,
+      category: finalCategory,
+      paymentChoice: form.payment.value,
+      batchId: "WTO-2026-W27",
+      resultDate: "7 July 2026",
+      file: base64,
+      fileName: file.name,
+      mimeType: file.type
+    };
 
     const response = await fetch(
       "https://script.google.com/macros/s/AKfycbyhyd7TPxGL-iEvRPxXbdCqEp2LvtOM9sKZYUk87NSy0QQN0DngYsbl3Kg5W4Zts2cmsw/exec",
@@ -65,20 +66,33 @@ reader.onload = async () => {
     const result = await response.json();
 
     if (result.success) {
+
       setSuccess(result.submissionId);
+
       form.reset();
+
       setCustomCategory("");
+
     } else {
+
+      console.error(result);
+
       alert("Submission failed");
+
     }
 
   } catch (error) {
+
     console.error(error);
+
     alert("Something went wrong");
+
   }
 
   setLoading(false);
+
 };
+```
 
 }
 
@@ -92,6 +106,7 @@ fontFamily: "Arial"
 }}
 >
 
+```
   <h1>World Talent Olympiad 2026</h1>
 
   <p>
@@ -171,12 +186,11 @@ fontFamily: "Arial"
     </select>
 
     <input
-placeholder="Custom Category (Optional)"
-value={customCategory}
-onChange={(e) => setCustomCategory(e.target.value)}
-style={inputStyle}
-/>
-
+      placeholder="Custom Category (Optional)"
+      value={customCategory}
+      onChange={(e) => setCustomCategory(e.target.value)}
+      style={inputStyle}
+    />
 
     <input
       type="file"
@@ -220,6 +234,7 @@ style={inputStyle}
   </form>
 
 </main>
+```
 
 );
 }
