@@ -1,61 +1,80 @@
-"use client";
-
-import { useState } from "react";
-
-export default function Home() {
-
-const [loading, setLoading] = useState(false);
-const [success, setSuccess] = useState("");
-const [customCategory, setCustomCategory] = useState("");
-
 async function handleSubmit(e) {
 
-e.preventDefault();
+  e.preventDefault();
 
-setLoading(true);
+  setLoading(true);
 
-const form = e.target;
+  const form = e.target;
 
-const file = form.file.files[0];
+  const file = form.file.files[0];
 
-if (!file) {
-  alert("Please upload a file");
-  setLoading(false);
-  return;
-}
-
-const reader = new FileReader();
-
-reader.readAsDataURL(file);
-
-reader.onload = async () => {
+  if (!file) {
+    alert("Please upload a file");
+    setLoading(false);
+    return;
+  }
 
   try {
 
-    const base64 = reader.result.split(",")[1];
+    // STEP 1 — Upload to Cloudinary
+
+    const cloudinaryData = new FormData();
+
+    cloudinaryData.append("file", file);
+
+    cloudinaryData.append(
+      "upload_preset",
+      "wto_uploads"
+    );
+
+    const cloudinaryResponse = await fetch(
+      "https://api.cloudinary.com/v1_1/muxrjcvw/auto/upload",
+      {
+        method: "POST",
+        body: cloudinaryData
+      }
+    );
+
+    const cloudinaryResult =
+      await cloudinaryResponse.json();
+
+    // STEP 2 — Final Category
 
     const finalCategory =
       form.category.value === "Custom"
         ? customCategory
         : form.category.value;
 
+    // STEP 3 — Send ONLY metadata to Apps Script
+
     const payload = {
+
       fullName: form.fullName.value,
+
       age: form.age.value,
+
       country: form.country.value,
+
       whatsapp: form.whatsapp.value,
+
       email: form.email.value,
+
       category: finalCategory,
+
       paymentChoice: form.payment.value,
+
       batchId: "WTO-2026-W27",
+
       resultDate: "7 July 2026",
-      file: base64,
-      fileName: file.name,
-      mimeType: file.type
+
+      fileUrl: cloudinaryResult.secure_url,
+
+      filePublicId: cloudinaryResult.public_id
+
     };
 
     const response = await fetch(
-      "https://script.google.com/macros/s/AKfycbylhg5ubj_1LnUs-XZ3dKDPdV64nhgCoJFfanL6khpvb38LT-3UjtNAbHGAy825bQ2YlQ/exec",
+      "PASTE_YOUR_APPS_SCRIPT_URL",
       {
         method: "POST",
         body: JSON.stringify(payload)
@@ -74,179 +93,18 @@ reader.onload = async () => {
 
     } else {
 
-      console.error(result);
-
       alert(result.error || "Submission failed");
 
     }
 
-  } catch (error) {
+  } catch(error) {
 
     console.error(error);
 
-   alert(error.message);
+    alert(error.message);
 
   }
 
   setLoading(false);
 
-};
-
 }
-
-return (
-<main
-style={{
-maxWidth: "700px",
-margin: "40px auto",
-padding: "20px",
-fontFamily: "Arial"
-}}
->
-
-  <h1>World Talent Olympiad 2026</h1>
-
-  <p>
-    Submit your talent and get global recognition.
-  </p>
-
-  {success && (
-    <div
-      style={{
-        padding: "20px",
-        background: "#e7ffe7",
-        marginBottom: "20px"
-      }}
-    >
-      Submission Successful!
-      <br /><br />
-      Submission ID:
-      <br />
-      <strong>{success}</strong>
-    </div>
-  )}
-
-  <form onSubmit={handleSubmit}>
-
-    <input
-      name="fullName"
-      placeholder="Full Name"
-      required
-      style={inputStyle}
-    />
-
-    <input
-      name="age"
-      placeholder="Age"
-      required
-      style={inputStyle}
-    />
-
-    <input
-      name="country"
-      placeholder="Country"
-      required
-      style={inputStyle}
-    />
-
-    <input
-      name="whatsapp"
-      placeholder="WhatsApp Number"
-      required
-      style={inputStyle}
-    />
-
-    <input
-      name="email"
-      placeholder="Email (Optional)"
-      style={inputStyle}
-    />
-
-    <select
-      name="category"
-      required
-      style={inputStyle}
-      onChange={(e) => {
-        if (e.target.value !== "Custom") {
-          setCustomCategory("");
-        }
-      }}
-    >
-      <option value="">Select Talent Category</option>
-      <option>Singing</option>
-      <option>Dancing</option>
-      <option>Painting</option>
-      <option>Acting</option>
-      <option>Photography</option>
-      <option>Magic</option>
-      <option>Custom</option>
-    </select>
-
-    <input
-      placeholder="Custom Category (Optional)"
-      value={customCategory}
-      onChange={(e) => setCustomCategory(e.target.value)}
-      style={inputStyle}
-    />
-
-    <input
-      type="file"
-      name="file"
-      required
-      style={inputStyle}
-    />
-
-    <div style={{ marginTop: "20px" }}>
-
-      <label>
-        <input
-          type="radio"
-          name="payment"
-          value="Paid"
-          required
-        />
-        {" "}I Have Paid
-      </label>
-
-      <br /><br />
-
-      <label>
-        <input
-          type="radio"
-          name="payment"
-          value="Pending"
-        />
-        {" "}I Will Pay Later
-      </label>
-
-    </div>
-
-    <button
-      disabled={loading}
-      style={buttonStyle}
-    >
-      {loading ? "Submitting..." : "Submit"}
-    </button>
-
-  </form>
-
-</main>
-
-);
-}
-
-const inputStyle = {
-width: "100%",
-padding: "12px",
-marginTop: "15px"
-};
-
-const buttonStyle = {
-width: "100%",
-padding: "14px",
-marginTop: "20px",
-background: "black",
-color: "white",
-border: "none",
-cursor: "pointer"
-};
