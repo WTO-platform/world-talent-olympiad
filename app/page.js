@@ -164,176 +164,220 @@ export default function Home() {
         Submit your talent and get global recognition.
       </p>
 
-      {success && (
+      {success ? (
+
         <div
           style={{
-            padding: "20px",
+            padding: "30px",
             background: "#e7ffe7",
-            marginBottom: "20px"
+            marginTop: "30px",
+            borderRadius: "10px",
+            textAlign: "center"
           }}
         >
-          Submission Successful!
-          <br /><br />
-          Submission ID:
-          <br />
-          <strong>{success}</strong>
+
+          <h2>
+            Submission Successful 🎉
+          </h2>
+
+          <p
+            style={{
+              fontSize: "18px",
+              marginTop: "20px"
+            }}
+          >
+            Your Submission ID
+          </p>
+
+          <h1>
+            {success}
+          </h1>
+
+          <p
+            style={{
+              marginTop: "25px",
+              lineHeight: "28px"
+            }}
+          >
+            Our team will verify your submission
+            and payment manually.
+            <br /><br />
+            Results for this batch will be announced
+            on Tuesday, 7 July 2026 on our official
+            social media pages.
+          </p>
+
+          <a
+            href="https://wa.me/917689988389"
+            target="_blank"
+            style={{
+              display: "inline-block",
+              marginTop: "20px",
+              padding: "14px 24px",
+              background: "#25D366",
+              color: "white",
+              textDecoration: "none",
+              borderRadius: "8px",
+              fontWeight: "bold"
+            }}
+          >
+            Contact on WhatsApp
+          </a>
+
         </div>
-      )}
 
-      <form onSubmit={handleSubmit}>
+      ) : (
 
-        <input
-          name="fullName"
-          placeholder="Full Name"
-          required
-          style={inputStyle}
-        />
+        <form onSubmit={handleSubmit}>
 
-        <input
-          name="age"
-          placeholder="Age"
-          required
-          style={inputStyle}
-        />
+          <input
+            name="fullName"
+            placeholder="Full Name"
+            required
+            style={inputStyle}
+          />
 
-        <input
-          name="country"
-          placeholder="Country"
-          required
-          style={inputStyle}
-        />
+          <input
+            name="age"
+            placeholder="Age"
+            required
+            style={inputStyle}
+          />
 
-        <input
-          name="whatsapp"
-          placeholder="WhatsApp Number"
-          required
-          style={inputStyle}
-        />
+          <input
+            name="country"
+            placeholder="Country"
+            required
+            style={inputStyle}
+          />
 
-        <input
-          name="email"
-          placeholder="Email (Optional)"
-          style={inputStyle}
-        />
+          <input
+            name="whatsapp"
+            placeholder="WhatsApp Number"
+            required
+            style={inputStyle}
+          />
 
-        <select
-          name="category"
-          required
-          style={inputStyle}
-          onChange={(e) => {
-            if (e.target.value !== "Custom") {
-              setCustomCategory("");
+          <input
+            name="email"
+            placeholder="Email (Optional)"
+            style={inputStyle}
+          />
+
+          <select
+            name="category"
+            required
+            style={inputStyle}
+            onChange={(e) => {
+              if (e.target.value !== "Custom") {
+                setCustomCategory("");
+              }
+            }}
+          >
+            <option value="">
+              Select Talent Category
+            </option>
+
+            <option>Singing</option>
+            <option>Dancing</option>
+            <option>Painting</option>
+            <option>Acting</option>
+            <option>Photography</option>
+            <option>Magic</option>
+            <option>Custom</option>
+
+          </select>
+
+          <input
+            placeholder="Custom Category (Optional)"
+            value={customCategory}
+            onChange={(e) =>
+              setCustomCategory(
+                e.target.value
+              )
             }
-          }}
-        >
-          <option value="">
-            Select Talent Category
-          </option>
+            style={inputStyle}
+          />
 
-          <option>Singing</option>
+          <button
+            type="button"
+            onClick={openUploadWidget}
+            style={buttonStyle}
+          >
+            {uploadedFile
+              ? "File Uploaded Successfully"
+              : "Upload Talent File (Under 100MB)"}
+          </button>
 
-          <option>Dancing</option>
+          <a
+            href="https://wa.me/917689988389"
+            target="_blank"
+            style={{
+              ...buttonStyle,
+              display: "block",
+              textAlign: "center",
+              textDecoration: "none",
+              background: "#25D366"
+            }}
+          >
+            Send Large Files on WhatsApp
+          </a>
 
-          <option>Painting</option>
+          <p
+            style={{
+              marginTop: "10px",
+              color: "gray",
+              fontSize: "14px"
+            }}
+          >
+            Upload JPG, PNG, PDF, MP3 or MP4 under 100MB.
+            <br />
+            For larger files, use WhatsApp submission.
+          </p>
 
-          <option>Acting</option>
+          <div style={{ marginTop: "20px" }}>
 
-          <option>Photography</option>
+            <label>
 
-          <option>Magic</option>
+              <input
+                type="radio"
+                name="payment"
+                value="Paid"
+                required
+              />
 
-          <option>Custom</option>
+              {" "}I Have Paid
 
-        </select>
+            </label>
 
-        <input
-          placeholder="Custom Category (Optional)"
-          value={customCategory}
-          onChange={(e) =>
-            setCustomCategory(
-              e.target.value
-            )
-          }
-          style={inputStyle}
-        />
+            <br /><br />
 
-        <button
-          type="button"
-          onClick={openUploadWidget}
-          style={buttonStyle}
-        >
-          {uploadedFile
-            ? "File Uploaded Successfully"
-            : "Upload Talent File (Under 100MB)"}
-        </button>
+            <label>
 
-        <a
-          href="https://wa.me/917689988389"
-          target="_blank"
-          style={{
-            ...buttonStyle,
-            display: "block",
-            textAlign: "center",
-            textDecoration: "none",
-            background: "#25D366"
-          }}
-        >
-          Send Large Files on WhatsApp
-        </a>
+              <input
+                type="radio"
+                name="payment"
+                value="Pending"
+              />
 
-        <p
-          style={{
-            marginTop: "10px",
-            color: "gray",
-            fontSize: "14px"
-          }}
-        >
-          Upload JPG, PNG, PDF, MP3 or MP4 under 100MB.
-          <br />
-          For larger files, use WhatsApp submission.
-        </p>
+              {" "}I Will Pay Later
 
-        <div style={{ marginTop: "20px" }}>
+            </label>
 
-          <label>
+          </div>
 
-            <input
-              type="radio"
-              name="payment"
-              value="Paid"
-              required
-            />
+          <button
+            disabled={loading}
+            style={buttonStyle}
+          >
+            {loading
+              ? "Submitting..."
+              : "Submit"}
+          </button>
 
-            {" "}I Have Paid
+        </form>
 
-          </label>
-
-          <br /><br />
-
-          <label>
-
-            <input
-              type="radio"
-              name="payment"
-              value="Pending"
-            />
-
-            {" "}I Will Pay Later
-
-          </label>
-
-        </div>
-
-        <button
-          disabled={loading}
-          style={buttonStyle}
-        >
-          {loading
-            ? "Submitting..."
-            : "Submit"}
-        </button>
-
-      </form>
+      )}
 
     </main>
   );
