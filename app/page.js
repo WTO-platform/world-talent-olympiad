@@ -19,6 +19,12 @@ const form = e.target;
 
 const file = form.file.files[0];
 
+if (!file) {
+  alert("Please upload a file");
+  setLoading(false);
+  return;
+}
+
 const reader = new FileReader();
 
 reader.readAsDataURL(file);
@@ -47,21 +53,29 @@ reader.onload = async () => {
     mimeType: file.type
   };
 
-  const response = await fetch(
-    "https://script.google.com/macros/s/AKfycbyhyd7TPxGL-iEvRPxXbdCqEp2LvtOM9sKZYUk87NSy0QQN0DngYsbl3Kg5W4Zts2cmsw/exec",
-    {
-      method: "POST",
-      body: JSON.stringify(payload)
+  try {
+
+    const response = await fetch(
+      "https://script.google.com/macros/s/AKfycbyhyd7TPxGL-iEvRPxXbdCqEp2LvtOM9sKZYUk87NSy0QQN0DngYsbl3Kg5W4Zts2cmsw/exec",
+      {
+        method: "POST",
+        body: JSON.stringify(payload)
+      }
+    );
+
+    const result = await response.json();
+
+    if (result.success) {
+      setSuccess(result.submissionId);
+      form.reset();
+      setCustomCategory("");
+    } else {
+      alert("Submission failed");
     }
-  );
 
-  const result = await response.json();
-
-  if (result.success) {
-    setSuccess(result.submissionId);
-    form.reset();
-  } else {
-    alert("Submission failed");
+  } catch (error) {
+    console.error(error);
+    alert("Something went wrong");
   }
 
   setLoading(false);
@@ -71,12 +85,14 @@ reader.onload = async () => {
 }
 
 return (
-<main style={{
+<main
+style={{
 maxWidth: "700px",
 margin: "40px auto",
 padding: "20px",
 fontFamily: "Arial"
-}}>
+}}
+>
 
 ```
   <h1>World Talent Olympiad 2026</h1>
@@ -86,11 +102,13 @@ fontFamily: "Arial"
   </p>
 
   {success && (
-    <div style={{
-      padding: "20px",
-      background: "#e7ffe7",
-      marginBottom: "20px"
-    }}>
+    <div
+      style={{
+        padding: "20px",
+        background: "#e7ffe7",
+        marginBottom: "20px"
+      }}
+    >
       Submission Successful!
       <br /><br />
       Submission ID:
@@ -155,12 +173,14 @@ fontFamily: "Arial"
       <option>Custom</option>
     </select>
 
-    <input
-      placeholder="Enter Custom Category"
-      value={customCategory}
-      onChange={(e) => setCustomCategory(e.target.value)}
-      style={inputStyle}
-    />
+    {customCategory !== "" || false ? (
+      <input
+        placeholder="Enter Custom Category"
+        value={customCategory}
+        onChange={(e) => setCustomCategory(e.target.value)}
+        style={inputStyle}
+      />
+    ) : null}
 
     <input
       type="file"
@@ -202,6 +222,7 @@ fontFamily: "Arial"
     </button>
 
   </form>
+
 </main>
 ```
 
