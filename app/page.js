@@ -84,7 +84,7 @@ export default function Home() {
       };
 
       const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbylhg5ubj_1LnUs-XZ3dKDPdV64nhgCoJFfanL6khpvb38LT-3UjtNAbHGAy825bQ2YlQ/exec",
+        "https://script.google.com/macros/s/AKfycbwqtXzW9vez7dw2vaIUj8ok_LMr-3Vu92PVrFowBO9ZrZ915QuHciiBDkPPOwTugtD3kA/exec",
         {
           method: "POST",
           body: JSON.stringify(payload)
