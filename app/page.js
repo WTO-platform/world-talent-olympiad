@@ -109,42 +109,146 @@ export default function Home() {
 
   }
 
-  function openUploadWidget() {
+  async function openUploadWidget() {
 
-    const widget =
-      window.cloudinary.createUploadWidget(
+    const input = document.createElement("input");
 
-        {
-          cloudName: "muxrjcvw",
+    input.type = "file";
 
-          uploadPreset: "wto_uploads",
+    input.accept =
+      "video/*,image/*,.pdf,.mp3,.wav";
 
-          sources: ["local"],
+    input.onchange = async (event) => {
 
-          multiple: false,
+      let file = event.target.files[0];
 
-          resourceType: "auto",
+      if (!file) return;
 
-          maxFileSize: 300000000
-        },
+      try {
 
-        (error, result) => {
+        // VIDEO COMPRESSION
 
-          if (
-            !error &&
-            result &&
-            result.event === "success"
-          ) {
+        if (file.type.startsWith("video/")) {
 
-            setUploadedFile(result.info);
+          alert(
+            "Compressing video before upload. Please wait..."
+          );
 
-          }
+          const {
+            FFmpeg
+          } = await import("@ffmpeg/ffmpeg");
+
+          const {
+            fetchFile
+          } = await import("@ffmpeg/util");
+
+          const ffmpeg = new FFmpeg();
+
+          await ffmpeg.load();
+
+          await ffmpeg.writeFile(
+            file.name,
+            await fetchFile(file)
+          );
+
+          await ffmpeg.exec([
+            "-i",
+            file.name,
+
+            "-vcodec",
+            "libx264",
+
+            "-crf",
+            "32",
+
+            "-preset",
+            "fast",
+
+            "-acodec",
+            "aac",
+
+            "compressed.mp4"
+          ]);
+
+          const data =
+            await ffmpeg.readFile(
+              "compressed.mp4"
+            );
+
+          file = new File(
+            [data],
+            "compressed.mp4",
+            {
+              type: "video/mp4"
+            }
+          );
+
+          alert(
+            "Compression completed. Upload starting..."
+          );
 
         }
 
-      );
+        // CLOUDINARY UPLOAD
 
-    widget.open();
+        const cloudinaryData =
+          new FormData();
+
+        cloudinaryData.append(
+          "file",
+          file
+        );
+
+        cloudinaryData.append(
+          "upload_preset",
+          "wto_uploads"
+        );
+
+        const cloudinaryResponse =
+          await fetch(
+            "https://api.cloudinary.com/v1_1/muxrjcvw/auto/upload",
+            {
+              method: "POST",
+              body: cloudinaryData
+            }
+          );
+
+        const cloudinaryResult =
+          await cloudinaryResponse.json();
+
+        if (
+          cloudinaryResult.secure_url
+        ) {
+
+          setUploadedFile(
+            cloudinaryResult
+          );
+
+          alert(
+            "File uploaded successfully"
+          );
+
+        } else {
+
+          alert(
+            "Upload failed"
+          );
+
+        }
+
+      } catch(error) {
+
+        console.error(error);
+
+        alert(
+          "Upload failed"
+        );
+
+      }
+
+    };
+
+    input.click();
 
   }
 
@@ -226,7 +330,9 @@ export default function Home() {
             }
           }}
         >
-          <option value="">Select Talent Category</option>
+          <option value="">
+            Select Talent Category
+          </option>
 
           <option>Singing</option>
 
@@ -248,7 +354,9 @@ export default function Home() {
           placeholder="Custom Category (Optional)"
           value={customCategory}
           onChange={(e) =>
-            setCustomCategory(e.target.value)
+            setCustomCategory(
+              e.target.value
+            )
           }
           style={inputStyle}
         />
@@ -262,6 +370,19 @@ export default function Home() {
             ? "File Uploaded Successfully"
             : "Upload Talent File"}
         </button>
+
+        <p
+          style={{
+            marginTop: "10px",
+            color: "gray",
+            fontSize: "14px"
+          }}
+        >
+          Upload MP4, MP3, PDF,
+          JPG, PNG or HEIC.
+          Large videos are compressed
+          automatically before upload.
+        </p>
 
         <div style={{ marginTop: "20px" }}>
 
