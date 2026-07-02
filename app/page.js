@@ -10,7 +10,6 @@ const [customCategory, setCustomCategory] = useState("");
 
 async function handleSubmit(e) {
 
-```
 e.preventDefault();
 
 setLoading(true);
@@ -92,7 +91,6 @@ reader.onload = async () => {
   setLoading(false);
 
 };
-```
 
 }
 
@@ -106,7 +104,6 @@ fontFamily: "Arial"
 }}
 >
 
-```
   <h1>World Talent Olympiad 2026</h1>
 
   <p>
@@ -234,7 +231,6 @@ fontFamily: "Arial"
   </form>
 
 </main>
-```
 
 );
 }
